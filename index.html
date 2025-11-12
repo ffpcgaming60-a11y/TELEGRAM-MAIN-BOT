@@ -285,7 +285,7 @@
             const configRef = doc(db, "config", "main");
             try {
                 const configSnap = await getDoc(configRef);
-                appConfig = configSnap.exists() ? configSnap.data() : { minWithdrawal: 5000, paymentMethods: ["UPI", "bKash"], dailyAdLimit: 10, coinValueCoins: 1000, coinValueInr: 10 };
+                appConfig = configSnap.exists() ? configSnap.data() : { minWithdrawal: 5000, paymentMethods: ["binance", "bKash"], dailyAdLimit: 10, coinValueCoins: 1000, coinValueInr: 10 };
             } catch (error) {
                 console.error("Error fetching app config:", error);
             }
@@ -299,8 +299,8 @@
             profileNameEl.textContent = userData.name || 'No Name';
             profileEmailEl.textContent = userData.email || 'No Email';
             referralCodeEl.textContent = userData.referralCode || '...';
-            minWithdrawalInfoEl.textContent = `${appConfig.minWithdrawal || 5000} Coins`;
-            coinValueInfoEl.textContent = `${appConfig.coinValueCoins || 1000} Coins = à§³${appConfig.coinValueInr || 10}`;
+            minWithdrawalInfoEl.textContent = `${appConfig.minWithdrawal || 1000} Coins`;
+            coinValueInfoEl.textContent = `${appConfig.coinValueCoins || 1000} Coins = ${appConfig.coinValueInr || 10 }`;
             withdrawMethodSelect.innerHTML = '';
             (appConfig.paymentMethods || []).forEach(method => {
                 const option = document.createElement('option');
@@ -324,7 +324,7 @@
         function updateDynamicPaymentFields() {
             const selectedMethod = withdrawMethodSelect.value.toLowerCase();
             let placeholder = "Enter Details";
-            if (selectedMethod.includes('upi')) placeholder = "Enter your UPI ID";
+            if (selectedMethod.includes('binance')) placeholder = "Enter your binance ID";
             if (selectedMethod.includes('bkash')) placeholder = "Enter your bKash Number";
             paymentDetailsContainer.innerHTML = `<input id="payment-detail-input" type="text" placeholder="${placeholder}" class="w-full p-3 rounded-lg input-field">`;
         }
@@ -511,12 +511,12 @@
             const method = document.getElementById('withdraw-method').value;
             const paymentDetailInput = document.getElementById('payment-detail-input');
             const paymentDetail = paymentDetailInput ? paymentDetailInput.value.trim() : '';
-            const minWithdrawal = appConfig.minWithdrawal || 5000;
+            const minWithdrawal = appConfig.minWithdrawal || 1000;
 
             if (!amount || amount <= 0) return showAlert("Please enter a valid amount.");
             if (amount < minWithdrawal) return showAlert(`Minimum withdrawal is ${minWithdrawal} coins.`);
             if (amount > userData.balance) return showAlert("Insufficient balance.");
-            if (!paymentDetail) return showAlert("Please enter payment details (e.g., UPI ID or bKash Number).");
+            if (!paymentDetail) return showAlert("Please enter payment details (e.g., bKash Number).");
 
             loader.style.display = 'flex';
             try {
